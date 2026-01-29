@@ -4,6 +4,7 @@ import { AppProvider } from './context/AppContext';
 import Layout from './components/Layout';
 import Home from './pages/Home';
 import Scan from './pages/Scan';
+import BarcodeScan from './pages/BarcodeScan';
 import History from './pages/History';
 import Rewards from './pages/Rewards';
 import Profile from './pages/Profile';
@@ -16,6 +17,7 @@ function App() {
           <Route path="/" element={<Layout />}>
             <Route index element={<Home />} />
             <Route path="scan" element={<Scan />} />
+            <Route path="scan/verify" element={<BarcodeScan />} />
             <Route path="history" element={<History />} />
             <Route path="rewards" element={<Rewards />} />
             <Route path="profile" element={<Profile />} />

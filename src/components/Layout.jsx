@@ -13,7 +13,7 @@ const Layout = () => {
         <nav className="app-nav">
           <NavItem to="/" icon={<Home size={22} />} label="ホーム" />
           <NavItem to="/history" icon={<History size={22} />} label="履歴" />
-          <NavItem to="/scan" icon={<ScanLine size={22} />} label="回収" isPrimary />
+          <NavItem to="/scan" icon={<ScanLine size={22} />} isPrimary />
           <NavItem to="/rewards" icon={<Gift size={22} />} label="交換" />
           <NavItem to="/profile" icon={<User size={22} />} label="マイページ" />
         </nav>
@@ -31,7 +31,7 @@ const NavItem = ({ to, icon, label, isPrimary }) => {
       )}
     >
       {icon}
-      <span className="nav-item__label">{label}</span>
+      {label && <span className="nav-item__label">{label}</span>}
     </NavLink>
   );
 };

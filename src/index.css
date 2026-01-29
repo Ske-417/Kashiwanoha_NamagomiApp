@@ -110,10 +110,17 @@ h1, h2, h3 {
 .nav-item--primary {
   background: hsl(var(--green-600));
   color: #fff;
-  padding: 10px 8px;
+  padding: 12px 8px;
   margin-top: -18px;
   border-radius: 16px;
   box-shadow: var(--shadow-md);
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-item--primary svg {
+  width: 32px;
+  height: 32px;
 }
 
 .nav-item--primary.is-active {
