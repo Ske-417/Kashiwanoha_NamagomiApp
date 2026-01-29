@@ -47,8 +47,18 @@ export const AppProvider = ({ children }) => {
     }));
   };
 
+  const redeemPoints = (cost) => {
+    if (user.points < cost) return false;
+
+    setUser(prev => ({
+      ...prev,
+      points: prev.points - cost,
+    }));
+    return true;
+  };
+
   return (
-    <AppContext.Provider value={{ user, setUser, history, stats, addEntry }}>
+    <AppContext.Provider value={{ user, setUser, history, stats, addEntry, redeemPoints }}>
       {children}
     </AppContext.Provider>
   );

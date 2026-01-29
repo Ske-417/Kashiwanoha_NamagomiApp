@@ -12,16 +12,18 @@ const Scan = () => {
     const [amount, setAmount] = useState('');
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    const numericAmount = parseFloat(amount);
+    const canSubmit = !Number.isNaN(numericAmount) && numericAmount > 0;
 
     const handleSubmit = async (e) => {
         e.preventDefault();
-        if(!amount) return;
+        if (!canSubmit) return;
 
         setIsSubmitting(true);
         // Simulate API call
         await new Promise(resolve => setTimeout(resolve, 800));
         
-        addEntry('waste', amount);
+        addEntry('waste', numericAmount);
         setIsSubmitting(false);
         setShowSuccess(true);
 
@@ -32,12 +34,12 @@ const Scan = () => {
     };
 
     return (
-        <div className="container min-h-screen bg-gray-50 flex flex-col">
-            <header className="py-4 flex items-center gap-4">
-                <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-600">
+        <div className="page">
+            <header style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <button onClick={() => navigate(-1)} style={{ border: 'none', background: 'transparent', color: 'hsl(var(--text-500))', padding: '4px' }}>
                     <ArrowLeft size={24} />
                 </button>
-                <h1 className="text-lg font-bold">回収記録</h1>
+                <h1 className="page-title">回収記録</h1>
             </header>
 
             <AnimatePresence>
@@ -46,50 +48,49 @@ const Scan = () => {
                         initial={{ opacity: 0, scale: 0.8 }}
                         animate={{ opacity: 1, scale: 1 }}
                         exit={{ opacity: 0 }}
-                        className="flex-1 flex flex-col items-center justify-center text-center p-8"
+                        style={{ flex: 1, display: 'flex', flexDirection: 'column', alignItems: 'center', justifyContent: 'center', textAlign: 'center', padding: '24px' }}
                     >
                         <motion.div 
                             initial={{ scale: 0 }}
                             animate={{ scale: 1 }}
                             transition={{ type: "spring", stiffness: 200, damping: 10 }}
-                            className="text-green-500 mb-6"
+                            style={{ color: 'hsl(var(--green-600))', marginBottom: '24px' }}
                         >
                             <CheckCircle2 size={80} />
                         </motion.div>
-                        <h2 className="text-2xl font-bold text-gray-800 mb-2">記録完了！</h2>
-                        <p className="text-gray-500">ナイスアクション！<br/>ポイントを獲得しました。</p>
+                        <h2 style={{ fontSize: '22px', fontWeight: 700, marginBottom: '8px' }}>記録完了！</h2>
+                        <p style={{ color: 'hsl(var(--text-600))' }}>ナイスアクション！<br/>ポイントを獲得しました。</p>
                     </motion.div>
                 ) : (
                     <motion.div 
                         initial={{ opacity: 0 }}
                         animate={{ opacity: 1 }}
-                        className="flex-1 flex flex-col"
+                        style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}
                     >
-                        <Card className="mb-6 flex-1 flex flex-col justify-center items-center py-12">
-                            <div className="bg-green-100 p-6 rounded-full text-green-600 mb-6">
+                        <Card className="card--center">
+                            <div className="history-icon" style={{ width: '64px', height: '64px', background: 'rgba(22, 143, 94, 0.16)', color: 'hsl(var(--green-600))', margin: '0 auto 16px' }}>
                                 <Scale size={48} />
                             </div>
-                            <h2 className="text-xl font-bold text-gray-800 mb-8">生ごみの重さを入力</h2>
+                            <h2 style={{ fontSize: '18px', fontWeight: 700, marginBottom: '20px' }}>生ごみの重さを入力</h2>
                             
-                            <div className="flex items-baseline gap-2 mb-8 relative">
+                            <div style={{ display: 'flex', alignItems: 'baseline', gap: '6px', justifyContent: 'center', position: 'relative' }}>
                                 <input 
                                     type="number" 
                                     value={amount} 
                                     onChange={(e) => setAmount(e.target.value)} 
-                                    className="text-5xl font-bold text-center w-40 bg-transparent border-b-2 border-green-500 focus:outline-none focus:border-green-700 transition-colors p-2"
+                                    className="weight-input"
                                     placeholder="0.0"
                                     step="0.1"
                                     autoFocus
                                 />
-                                <span className="text-xl text-gray-500 font-bold absolute right-4 bottom-4">kg</span>
+                                <span style={{ fontSize: '16px', color: 'hsl(var(--text-500))', fontWeight: 700, position: 'absolute', right: '-4px', bottom: '8px' }}>kg</span>
                             </div>
                         </Card>
 
-                        <div className="mt-auto mb-8">
+                        <div style={{ marginTop: 'auto' }}>
                             <Button 
                                 onClick={handleSubmit} 
-                                disabled={!amount || isSubmitting}
-                                className={isSubmitting ? "opacity-80" : ""}
+                                disabled={!canSubmit || isSubmitting}
                             >
                                 {isSubmitting ? '送信中...' : '記録する'}
                             </Button>

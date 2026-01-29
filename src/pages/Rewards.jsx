@@ -1,56 +1,93 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { ArrowLeft, Gift } from 'lucide-react';
 import { useNavigate } from 'react-router-dom';
-import Card from '../components/Card';
-import Button from '../components/Button';
 import { useAppContext } from '../context/AppContext';
 
 const Rewards = () => {
     const navigate = useNavigate();
-    const { user } = useAppContext();
+    const { user, redeemPoints } = useAppContext();
+    const [notice, setNotice] = useState(null);
 
-    const RewardItem = ({ title, points, color }) => (
-        <Card className="flex items-center justify-between !p-3">
-             <div className="flex items-center gap-3">
-                 <div className={`w-12 h-12 rounded-lg ${color} flex items-center justify-center text-white`}>
+    const rewards = [
+        { title: "地元野菜 100円OFF", points: 500, color: "hsl(var(--green-600))", category: "ticket" },
+        { title: "コーヒー 1杯無料", points: 800, color: "hsl(var(--orange-500))", category: "ticket" },
+        { title: "スーパー商品券 500円", points: 2000, color: "hsl(var(--blue-500))", category: "ticket" },
+        { title: "PayPayポイント", points: 1000, color: "#ef4444", category: "partner" },
+        { title: "楽天ポイント", points: 1000, color: "#dc2626", category: "partner" },
+    ];
+
+    const handleRedeem = (reward) => {
+        const success = redeemPoints(reward.points);
+        if (success) {
+            setNotice({ type: 'success', message: `${reward.title} に交換しました（-${reward.points} pt）`, phase: 'enter' });
+        } else {
+            setNotice({ type: 'error', message: 'ポイントが不足しています', phase: 'enter' });
+        }
+
+        setTimeout(() => {
+            setNotice((prev) => (prev ? { ...prev, phase: 'exit' } : prev));
+        }, 1800);
+
+        setTimeout(() => setNotice(null), 2100);
+    };
+
+    const RewardItem = ({ reward }) => {
+        const { title, points, color } = reward;
+        return (
+        <div className="reward-item">
+             <div style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                 <div className="reward-icon" style={{ background: color }}>
                      <Gift size={20}/>
                  </div>
                  <div>
-                     <div className="font-bold text-sm">{title}</div>
-                     <div className="text-xs text-gray-500">{points} pt</div>
+                     <div style={{ fontWeight: 700, fontSize: '14px' }}>{title}</div>
+                     <div style={{ fontSize: '12px', color: 'hsl(var(--text-500))' }}>{points} pt</div>
                  </div>
              </div>
-             <button className="bg-gray-100 text-gray-600 text-xs px-3 py-1.5 rounded-full font-bold">
-                 交換
-             </button>
-        </Card>
-    );
+            <button
+                className="reward-cta"
+                onClick={() => handleRedeem(reward)}
+                disabled={user.points < points}
+                style={user.points < points ? { opacity: 0.5, cursor: 'not-allowed' } : undefined}
+            >
+                交換
+            </button>
+        </div>
+        );
+    };
 
     return (
-        <div className="container pb-24">
-             <header className="py-4 flex items-center gap-4 mb-4">
-                <button onClick={() => navigate(-1)} className="p-2 -ml-2 text-gray-600">
+        <div className="page">
+             <header style={{ display: 'flex', alignItems: 'center', gap: '12px' }}>
+                <button onClick={() => navigate(-1)} style={{ border: 'none', background: 'transparent', color: 'hsl(var(--text-500))', padding: '4px' }}>
                     <ArrowLeft size={24} />
                 </button>
-                <h1 className="text-lg font-bold">ポイント交換</h1>
+                <h1 className="page-title">ポイント交換</h1>
             </header>
             
-            <div className="bg-yellow-50 border border-yellow-200 p-4 rounded-xl mb-6 flex justify-between items-center">
-                <span className="text-yellow-800 font-bold">現在のポイント</span>
-                <span className="text-2xl font-bold text-yellow-900">{user.points} pt</span>
+            {notice && (
+                <div className={`toast toast--${notice.type} ${notice.phase === 'exit' ? 'is-exit' : ''}`}>
+                    {notice.message}
+                </div>
+            )}
+
+            <div className="soft-panel">
+                <span style={{ fontWeight: 700 }}>現在のポイント</span>
+                <span style={{ fontSize: '22px', fontWeight: 700 }}>{user.points} pt</span>
             </div>
 
-            <h2 className="font-bold text-gray-700 mb-4">チケットに交換</h2>
-            <div className="space-y-3 mb-8">
-                 <RewardItem title="地元野菜 100円OFF" points="500" color="bg-green-500" />
-                 <RewardItem title="コーヒー 1杯無料" points="800" color="bg-amber-600" />
-                 <RewardItem title="スーパー商品券 500円" points="2000" color="bg-blue-500" />
+            <h2 style={{ fontWeight: 700, color: 'hsl(var(--text-600))' }}>チケットに交換</h2>
+            <div style={{ display: 'grid', gap: '10px' }}>
+                      {rewards.filter((r) => r.category === 'ticket').map((reward) => (
+                          <RewardItem key={reward.title} reward={reward} />
+                      ))}
             </div>
 
-             <h2 className="font-bold text-gray-700 mb-4">他社ポイントに交換</h2>
-             <div className="space-y-3">
-                 <RewardItem title="PayPayポイント" points="1000" color="bg-red-500" />
-                 <RewardItem title="楽天ポイント" points="1000" color="bg-red-600" />
+             <h2 style={{ fontWeight: 700, color: 'hsl(var(--text-600))', marginTop: '18px' }}>他社ポイントに交換</h2>
+             <div style={{ display: 'grid', gap: '10px' }}>
+                      {rewards.filter((r) => r.category === 'partner').map((reward) => (
+                          <RewardItem key={reward.title} reward={reward} />
+                      ))}
             </div>
         </div>
     );
